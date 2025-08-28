@@ -172,11 +172,9 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
             average_probs = torch.zeros_like(main_model_relative_representation_probs)
 
             # --- beginning of ensemble ---
-            
-            model_relative_representation_probs_mat = []
-            for weight, probs in zip(self.ensemble_weight, model_relative_representation_probs_list):
-                model_relative_representation_probs_mat.append((weight * probs).flatten())
-            model_relative_representation_probs_mat = torch.stack(model_relative_representation_probs_mat, dim=0)
+
+            model_relative_representation_probs_mat = torch.stack([probs.flatten() for probs in model_relative_representation_probs_list], dim=0)
+            weight_vec = torch.tensor(self.ensemble_weight).unsqueeze(1)
 
             p_star = main_model_relative_representation_probs
             if self.ensemble_method[:4] == "tas2":
@@ -186,15 +184,15 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
             if self.ensemble_method != "vanilla":
                 token_conf_mat = torch.exp(-torch.abs(model_relative_representation_probs_mat - p_star))
 
-            average_probs = torch.sum(token_conf_mat * model_relative_representation_probs_mat, dim=0, keepdim=True)
+            average_probs = torch.sum(weight_vec * token_conf_mat * model_relative_representation_probs_mat, dim=0, keepdim=True)
 
             if self.ensemble_method == "tas+mas":
-                agreed_probs_tensor = F.normalize(token_conf_mat * model_relative_representation_probs_mat, p=1, dim=1)
+                agreed_probs_tensor = F.normalize(weight_vec * token_conf_mat * model_relative_representation_probs_mat, p=1, dim=1)
                 _, average_probs = barycenter_reverse_kl_weights(agreed_probs_tensor)
                 average_probs = average_probs.unsqueeze(0)
             elif self.ensemble_method[-4:] == "mas2":
                 model_conf_vec = token_conf_mat.sum(dim=1, keepdim=True)
-                average_probs = torch.sum(model_conf_vec * token_conf_mat * model_relative_representation_probs_mat, dim=0, keepdim=True)
+                average_probs = torch.sum(weight_vec * model_conf_vec * token_conf_mat * model_relative_representation_probs_mat, dim=0, keepdim=True)
 
             # --- end of ensemble ---
             average_relative_probs_values, average_relative_probs_indices = torch.topk(average_probs, k=10)

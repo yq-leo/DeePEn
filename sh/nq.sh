@@ -2,7 +2,7 @@ export CUDA_VISIBLE_DEVICES=0,2,4,6
 
 task=NQ
 rm=dev
-models=OpenChat+LLaMA+Mistral
+models=OpenChat+LLaMA
 mode=tas2
 
 res_path=./res/${task}/${rm}/${models}/${mode}
