@@ -1,16 +1,16 @@
 {
   "model_path": {
-    "main_model_path": "/data/username/ModelsHub/Llama-2-13b-hf",
-    "assist_model1_path": "/data/username/ModelsHub/mistralai/Mistral-7B-v0.1"
+    "main_model_path": "meta-llama/Llama-2-13b-hf",
+    "assist_model1_path": "mistralai/Mistral-7B-Instruct-v0.1"
   },
   "probability_transfer_matrix_path": {
-    "main_model_path": "/data/username/Experiments/LLM_ensemble/probability_transfer_matrix/Llama-2-13b-hf_Mistral-7B-v0.1/Llama-2-13b-hf.pth",
-    "assist_model1_path": "/data/username/Experiments/LLM_ensemble/probability_transfer_matrix/Llama-2-13b-hf_Mistral-7B-v0.1/Mistral-7B-v0.1.pth"
+    "main_model_path": "/home/qiyu6/DeePEn/mat/Llama-2-13b-hf_Mistral-7B-Instruct-v0.1/Llama-2-13b-hf.pth",
+    "assist_model1_path": "/home/qiyu6/DeePEn/mat/Llama-2-13b-hf_Mistral-7B-Instruct-v0.1/Mistral-7B-Instruct-v0.1.pth"
   },
   "file_path": {
-    "dev_file_path": "/data/home/username/Experiments/LLM_ensemble/Datasets/NaturalQuestions/dev/v1.0-simplified_simplified-nq-train.simpled_dev_100000_sample1600_seed42.jsonl",
-    "test_file_path": "/data/home/username/Experiments/LLM_ensemble/Datasets/NaturalQuestions/test/natural-questions.jsonl",
-    "demon_file_path": "/data/home/username/Experiments/LLM_ensemble/Datasets/NaturalQuestions/dev/v1.0-simplified_simplified-nq-train.simpled_few_shot_doman_6926_sample5_seed43.jsonl"
+    "dev_file_path": "/home/qiyu6/DeePEn/datasets/NaturalQuestions/dev/v1.0-simplified_simplified-nq-train.simpled_dev_100000_sample1600_seed42.jsonl",
+    "test_file_path": "/home/qiyu6/DeePEn/datasets/NaturalQuestions/test/natural-questions.jsonl",
+    "demon_file_path": "/home/qiyu6/DeePEn/datasets/NaturalQuestions/dev/v1.0-simplified_simplified-nq-train.simpled_few_shot_doman_6926_sample5_seed43.jsonl"
   },
   "prompt_template": {
     "main_model_system_template": "<s>{}",

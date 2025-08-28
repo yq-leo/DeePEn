@@ -13,7 +13,7 @@ class MainModelThread(threading.Thread):
                  learning_rate, learning_epochs_nums, result_save_dir,
                  ensemble_model_output_ids_queue,
                  assist_model_score_queue_list, main_model_probability_transfer_matrix_list,
-                 assist_model_probability_transfer_matrix_list, device, device_compute, early_stop_string_list=None):
+                 assist_model_probability_transfer_matrix_list, device, device_compute, ensemble_method, early_stop_string_list=None):
         self.model = main_model
         self.tokenizer = main_model_tokenizer
         self.assist_model_tokenizer = assist_model_tokenizer
@@ -28,6 +28,7 @@ class MainModelThread(threading.Thread):
         self.assist_model_probability_transfer_matrix_list = assist_model_probability_transfer_matrix_list
         self.device = device
         self.device_compute = device_compute
+        self.ensemble_method = ensemble_method
         self.early_stop_string_list = early_stop_string_list
 
         super().__init__()
@@ -44,7 +45,6 @@ class MainModelThread(threading.Thread):
             "learning_epochs_nums": self.learning_epochs_nums,
             "ensemble_model_output_ids_queue": self.ensemble_model_output_ids_queue,
             "assist_model_score_queue_list": self.assist_model_score_queue_list,
-
             "main_model_probability_transfer_matrix_list": self.main_model_probability_transfer_matrix_list,
             "assist_model_probability_transfer_matrix_list": self.assist_model_probability_transfer_matrix_list,
             "result_save_dir": self.result_save_dir,
@@ -52,6 +52,7 @@ class MainModelThread(threading.Thread):
             "assist_model_tokenizer": self.assist_model_tokenizer,
             "device": self.device,
             "device_compute": self.device_compute,
+            "ensemble_method": self.ensemble_method,
             "early_stop_string_list": self.early_stop_string_list,
         }
         # 创建对象
@@ -78,7 +79,8 @@ class MainModelThread(threading.Thread):
         # generate_ids = self.model.generate(**generation_kwargs,pad_token_id=self.tokenizer.eos_token_id,
         #                                    logits_processor=main_model_logits_processor_list,
         #                                    streamer=self.model_streamer)
-        generate_ids = self.model.generate(**generation_kwargs, pad_token_id=self.tokenizer.eos_token_id,
+        generate_ids = self.model.generate(**generation_kwargs,
+                                           pad_token_id=self.tokenizer.eos_token_id,
                                            logits_processor=main_model_logits_processor_list)
 
         text = self.tokenizer.decode(generate_ids[0])

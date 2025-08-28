@@ -57,8 +57,9 @@ def main():
     parser.add_argument('--ensemble_weight', '-ew',
                         nargs='+',
                         type=float,
-                        default=[1.0], help='ensemble_weight', required=False
-                        )
+                        default=[1.0], help='ensemble_weight', required=False)
+    parser.add_argument('--ensemble_method', '-em', default="vanilla", choices=['vanilla', 'tas', 'tas+mas', 'tas2'],
+                        required=False, help='ensemble_method')
 
     args = parser.parse_args()
     with open(args.config, 'r', encoding='utf-8') as f:
@@ -118,6 +119,8 @@ def main():
             assert sum(ensemble_weight) == 1, "集成权重和须为1"
         else:
             ensemble_weight = [1.0 / len(model_paths)] * len(model_paths)
+
+    ensemble_method = args.ensemble_method
 
     input_file_path = dev_file_path if run_mode == "dev" else test_file_path
 
@@ -215,6 +218,7 @@ def main():
                                                 assist_model_probability_transfer_matrix_list=assist_model_probability_transfer_matrix_list,
                                                 device_compute=device_compute,
                                                 device=device0,
+                                                ensemble_method=ensemble_method,
                                                 early_stop_string_list=early_stop_string_list
                                                 )
             main_model_thread.start()

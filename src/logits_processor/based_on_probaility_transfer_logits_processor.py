@@ -6,9 +6,58 @@ from collections import Counter
 
 import torch
 from torch import nn
+import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
 from transformers import LogitsProcessor
+
+
+def barycenter_reverse_kl_weights(P, tol=1e-8, max_iter=200, eps=1e-12):
+    """
+    Minimize sum_i KL(P_i || P*) with P* = sum_i w_i P_i, w in simplex.
+    Args:
+        P: tensor of shape [K, V], each row a distribution (nonneg, sum=1).
+        tol: L1 tol on w change.
+        max_iter: max iterations.
+        eps: small smoothing to avoid division by zero.
+    Returns:
+        w: [K] optimal weights (sum=1, >=0)
+        P_star: [V] barycenter
+    """
+
+    K, V = P.shape
+    # normalize defensively
+    P = P.clamp_min(0)
+    P = P / (P.sum(dim=1, keepdim=True) + 1e-20)
+
+    Q = P.sum(dim=0)                      # [V]
+    w = torch.full((K,), 1.0 / K, dtype=P.dtype, device=P.device)
+
+    for _ in range(max_iter):
+        P_star = (w[:, None] * P).sum(dim=0)           # [V]
+        # smoothing for stability
+        P_star = (1 - eps) * P_star + eps / V
+
+        # s_k = sum_x Q(x) * P_k(x) / P_star(x)
+        ratio = Q / P_star                             # [V]
+        s = (P * ratio[None, :]).sum(dim=1)            # [K]
+
+        w_new_unnorm = w * s
+        w_new_sum = w_new_unnorm.sum()
+        # if degenerate (can happen early), fall back to uniform
+        if w_new_sum <= 0:
+            w_new = torch.full_like(w, 1.0 / K)
+        else:
+            w_new = w_new_unnorm / w_new_sum
+
+        if torch.sum(torch.abs(w_new - w)) < tol:
+            w = w_new
+            break
+        w = w_new
+
+    P_star = (w[:, None] * P).sum(dim=0)
+    P_star = P_star / P_star.sum()
+    return w, P_star
 
 
 class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
@@ -16,7 +65,7 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
                  ensemble_model_output_ids_queue, assist_model_score_queue_list,
                  main_model_probability_transfer_matrix_list,
                  assist_model_probability_transfer_matrix_list, result_save_dir, main_model_tokenizer,
-                 assist_model_tokenizer, device, device_compute, early_stop_string_list=None):
+                 assist_model_tokenizer, device, device_compute, ensemble_method, early_stop_string_list=None):
         self.learning_rate = learning_rate
         self.assist_model_score_queue_list = assist_model_score_queue_list
         self.learning_epochs_nums = learning_epochs_nums
@@ -29,6 +78,7 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
         self.assist_model_tokenizer_list = assist_model_tokenizer
         self.device = device
         self.device_compute = device_compute
+        self.ensemble_method = ensemble_method
         self.early_stop_string_list = early_stop_string_list
 
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
@@ -83,6 +133,8 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
                 main_model_relative_representation_probs = torch.mm(main_model_generate_ids_probs,
                                                                     self.main_model_probability_transfer_matrix_list[
                                                                         0]).to(self.device_compute)
+                # Print the shape of main_model_relative_representation_probs
+                # print(f"main_model_relative_representation_probs dim:{main_model_relative_representation_probs.shape}")
 
                 main_model_relative_values, main_model_relative_indices = torch.topk(
                     main_model_relative_representation_probs, k=10)
@@ -105,6 +157,8 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
                     assist_model_relative_representation_probs = torch.mm(assist_model_generate_ids_probs,
                                                                           assist_model_probability_transfer_matrix).to(
                         self.device_compute)
+                    # Print the shape of assist_model_relative_representation_probs
+                    # print(f"assist_model_relative_representation_probs dim:{assist_model_relative_representation_probs.shape}")
 
                     assist_model_relative_values, assist_model_relative_indices = torch.topk(
                         assist_model_relative_representation_probs, k=10)
@@ -116,11 +170,34 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
             json_object[f'self.ensemble_weight'] = self.ensemble_weight
             # print(self.ensemble_weight)
             average_probs = torch.zeros_like(main_model_relative_representation_probs)
-            for weight, probs in zip(self.ensemble_weight, model_relative_representation_probs_list):
-                average_probs += weight * probs
 
-            average_relative_probs_values, average_relative_probs_indices = torch.topk(
-                average_probs, k=10)
+            # --- beginning of ensemble ---
+            
+            model_relative_representation_probs_mat = []
+            for weight, probs in zip(self.ensemble_weight, model_relative_representation_probs_list):
+                model_relative_representation_probs_mat.append((weight * probs).flatten())
+            model_relative_representation_probs_mat = torch.stack(model_relative_representation_probs_mat, dim=0)
+
+            p_star = main_model_relative_representation_probs
+            if self.ensemble_method[:4] == "tas2":
+                p_star = torch.mean(model_relative_representation_probs_mat, dim=0, keepdim=True)
+
+            token_conf_mat = torch.ones_like(model_relative_representation_probs_mat)
+            if self.ensemble_method != "vanilla":
+                token_conf_mat = torch.exp(-torch.abs(model_relative_representation_probs_mat - p_star))
+
+            average_probs = torch.sum(token_conf_mat * model_relative_representation_probs_mat, dim=0, keepdim=True)
+
+            if self.ensemble_method == "tas+mas":
+                agreed_probs_tensor = F.normalize(token_conf_mat * model_relative_representation_probs_mat, p=1, dim=1)
+                _, average_probs = barycenter_reverse_kl_weights(agreed_probs_tensor)
+                average_probs = average_probs.unsqueeze(0)
+            elif self.ensemble_method[-4:] == "mas2":
+                model_conf_vec = token_conf_mat.sum(dim=1, keepdim=True)
+                average_probs = torch.sum(model_conf_vec * token_conf_mat * model_relative_representation_probs_mat, dim=0, keepdim=True)
+
+            # --- end of ensemble ---
+            average_relative_probs_values, average_relative_probs_indices = torch.topk(average_probs, k=10)
 
             json_object[f'average_rel_probs_values'] = average_relative_probs_values.tolist()[0]
             json_object[f'average_rel_probs_indices'] = average_relative_probs_indices.tolist()[0]
