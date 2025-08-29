@@ -1,9 +1,9 @@
 export CUDA_VISIBLE_DEVICES=0,2,4,6
 
-task=NQ
+task=PIQA
 rm=dev
-models=OpenChat+LLaMA
-mode=tas2
+models=LLaMA+OpenChat+Mistral
+mode=tas2+mas2
 
 res_path=./res/${task}/${rm}/${models}/${mode}
 log_path=./log/${task}/${rm}/${models}/${mode}

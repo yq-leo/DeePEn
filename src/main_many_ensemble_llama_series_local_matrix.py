@@ -58,7 +58,7 @@ def main():
                         nargs='+',
                         type=float,
                         default=[1.0], help='ensemble_weight', required=False)
-    parser.add_argument('--ensemble_method', '-em', default="vanilla", choices=['vanilla', 'tas', 'tas+mas', 'tas2'],
+    parser.add_argument('--ensemble_method', '-em', default="vanilla", choices=['vanilla', 'tas', 'tas+mas', 'tas2', 'tas2+mas2'],
                         required=False, help='ensemble_method')
 
     args = parser.parse_args()

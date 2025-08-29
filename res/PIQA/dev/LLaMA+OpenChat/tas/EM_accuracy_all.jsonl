@@ -1,0 +1,1 @@
+{"learning_rate": "0.15", "accuracy": "75.98", "num_total": 1803, "num_correct": 1370, "sys_file_path": "res/PIQA/dev/LLaMA+OpenChat/tas/ensemble_lr0.15_learning_epochs_nums5.jsonl", "learning_epochs_nums": "5"}

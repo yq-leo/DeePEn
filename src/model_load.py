@@ -4,7 +4,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer, Auto
 def load_model(model_path, device):
     model = AutoModelForCausalLM.from_pretrained(model_path,
                                                  device_map=device,
-                                                 torch_dtype="auto", trust_remote_code=True)
+                                                 torch_dtype="auto",
+                                                 trust_remote_code=True)
     model = model.eval()
     tokenizer = load_tokenizer(model_path)
     # tokenizer.pad_token = tokenizer.eos_token
