@@ -18,10 +18,12 @@ import sys
 from utils.evaluate.utils import eval_utils
 
 
-def NQ_evaluate(references_path, predictions_path, is_regex=False, answer_field="answer"):
+def NQ_evaluate(references_path, predictions_path, is_regex=False, is_choice=False, answer_field="answer"):
     metrics = eval_utils.evaluate_predictions(references_path,
                                               predictions_path,
-                                              is_regex, "answer")
+                                              is_regex,
+                                              is_choice,
+                                              "answer")
     print("Found {} missing predictions.".format(metrics["missing_predictions"]))
     print("Accuracy: {:.2f} ({}/{})".format(metrics["accuracy"] * 100,
                                             metrics["num_correct"],

@@ -53,6 +53,12 @@ def regex_match_score(prediction, ground_truth):
         return False
 
 
+def choice_match_score(prediction, ground_truth):
+    prediction = prediction.strip().upper()
+    ground_truth = ground_truth.strip().upper()
+    return prediction == ground_truth
+
+
 def metric_max_over_ground_truths(metric_fn, prediction,
                                   ground_truths):
     scores_for_ground_truths = []
@@ -63,9 +69,11 @@ def metric_max_over_ground_truths(metric_fn, prediction,
 
 
 def is_correct(answers, prediction,
-               is_regex):
+               is_regex, is_choice):
     if is_regex:
         metric_fn = regex_match_score
+    if is_choice:
+        metric_fn = choice_match_score
     else:
         metric_fn = exact_match_score
     return metric_max_over_ground_truths(
@@ -74,7 +82,8 @@ def is_correct(answers, prediction,
 
 def evaluate_predictions_impl(references,
                               predictions,
-                              is_regex):
+                              is_regex,
+                              is_choice):
     """Calculates and returns metrics."""
     missing_predictions = 0
     correct = 0
@@ -82,7 +91,7 @@ def evaluate_predictions_impl(references,
         if question in predictions:
             # pdb.set_trace()
             correct += int(
-                is_correct(answers=answer, prediction=predictions[question], is_regex=is_regex))
+                is_correct(answers=answer, prediction=predictions[question], is_regex=is_regex, is_choice=is_choice))
         else:
             missing_predictions += 1
 
@@ -110,6 +119,7 @@ def evaluate_predictions(
         references_path,
         predictions_path,
         is_regex,
+        is_choice,
         answer_field="answer"):
     """Calculates and returns metrics."""
     if is_regex != ("CuratedTrec" in references_path):
@@ -133,4 +143,4 @@ def evaluate_predictions(
     print("Found {} predictions in {}".format(len(predictions), predictions_path))
 
     return evaluate_predictions_impl(
-        references=references, predictions=predictions, is_regex=is_regex)
+        references=references, predictions=predictions, is_regex=is_regex, is_choice=is_choice)

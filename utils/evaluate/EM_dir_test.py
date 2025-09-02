@@ -14,14 +14,14 @@ def result_write(result_path, sys_file_name, num_correct, num_total, accuracy):
     with open(os.path.join(result_path, 'EM_accuracy_all.jsonl'), 'a+', encoding='utf-8') as result_file:
         dict = {}
 
-        match = re.search(r'lr(.*?)learning_epochs_nums(.*)', sys_file_name)
-        lr, learning_epochs_nums = match.groups()
-        dict['learning_rate'] = lr.strip('_')
+        # match = re.search(r'lr(.*?)learning_epochs_nums(.*)', sys_file_name)
+        # lr, learning_epochs_nums = match.groups()
+        # dict['learning_rate'] = lr.strip('_')
         dict['accuracy'] = '{:.2f}'.format(accuracy * 100)
         dict['num_total'] = num_total
         dict['num_correct'] = num_correct
         dict['sys_file_path'] = os.path.join(result_path, sys_file_name)
-        dict['learning_epochs_nums'] = learning_epochs_nums.strip('.jsonl')
+        # dict['learning_epochs_nums'] = learning_epochs_nums.strip('.jsonl')
 
         result_file.write(json.dumps(dict, ensure_ascii=False) + '\n')
 
@@ -35,12 +35,14 @@ def find_files_with_suffix(folder_path, suffix):
 
 
 result_file_dir = sys.argv[1]
+is_choice = 'piqa' in result_file_dir.lower() or 'arc-c' in result_file_dir.lower()
+# is_choice = False
 
 jsonl_files_list = find_files_with_suffix(result_file_dir, "5.jsonl")
 jsonl_files_list.sort()
 for sys_file_name in jsonl_files_list:
     file_path = os.path.join(result_file_dir, sys_file_name)
-    num_correct, num_total, accuracy = NQ_evaluate(file_path, file_path)
+    num_correct, num_total, accuracy = NQ_evaluate(file_path, file_path, is_choice=is_choice)
 
     print('{:.2f}'.format(accuracy * 100))
     result_write(result_file_dir, sys_file_name, num_correct, num_total, accuracy)
