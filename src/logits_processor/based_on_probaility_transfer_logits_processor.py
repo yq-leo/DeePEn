@@ -171,7 +171,7 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
             # print(self.ensemble_weight)
             average_probs = torch.zeros_like(main_model_relative_representation_probs)
 
-            # --- beginning of ensemble ---
+            # --- start of ensemble ---
 
             model_relative_representation_probs_mat = torch.stack([probs.flatten() for probs in model_relative_representation_probs_list], dim=0)
             weight_vec = torch.tensor(self.ensemble_weight, device=model_relative_representation_probs_mat.device).unsqueeze(1)
@@ -193,6 +193,8 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
             elif self.ensemble_method[-4:] == "mas2":
                 model_conf_vec = token_conf_mat.sum(dim=1, keepdim=True)
                 average_probs = torch.sum(weight_vec * model_conf_vec * token_conf_mat * model_relative_representation_probs_mat, dim=0, keepdim=True)
+
+            average_probs = F.normalize(average_probs, p=1, dim=-1)
 
             # --- end of ensemble ---
             
