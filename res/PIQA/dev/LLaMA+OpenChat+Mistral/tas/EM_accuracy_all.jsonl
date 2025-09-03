@@ -1,2 +1,3 @@
 {"learning_rate": "0.15", "accuracy": "76.32", "num_total": 1803, "num_correct": 1376, "sys_file_path": "res/PIQA/dev/LLaMA+OpenChat+Mistral/tas/ensemble_lr0.15_learning_epochs_nums5.jsonl", "learning_epochs_nums": "5"}
 {"learning_rate": "0.15", "accuracy": "76.32", "num_total": 1803, "num_correct": 1376, "sys_file_path": "res/PIQA/dev/LLaMA+OpenChat+Mistral/tas/ensemble_lr0.15_learning_epochs_nums5.jsonl", "learning_epochs_nums": "5"}
+{"learning_rate": "0.15", "accuracy": "76.32", "num_total": 1803, "num_correct": 1376, "sys_file_path": "res/PIQA/dev/LLaMA+OpenChat+Mistral/tas/ensemble_lr0.15_learning_epochs_nums5.jsonl", "learning_epochs_nums": "5"}
