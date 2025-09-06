@@ -33,6 +33,7 @@ class AssistModelThread(threading.Thread):
 
         assist_model_generate_ids = self.model.generate(**assist_model_generation_kwargs,
                                                         pad_token_id=self.model_tokenizer.eos_token_id,
-                                                        logits_processor=assist_model_logits_processor_list)
+                                                        logits_processor=assist_model_logits_processor_list,
+                                                        use_cache=False)
         # print(assist_model_generate_ids)
         # print(self.model_tokenizer.decode(assist_model_generate_ids.tolist()[0]))

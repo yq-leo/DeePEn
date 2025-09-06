@@ -1,8 +1,8 @@
-export CUDA_VISIBLE_DEVICES=0,2,4,6
+export CUDA_VISIBLE_DEVICES=0,1,2,3
 
-task=PIQA
-rm=dev
-models=Mistral+OpenChat
+task=NQ
+rm=test
+models=OpenChat+InternLM7b
 mode=tas
 
 res_path=./res/${task}/${rm}/${models}/${mode}

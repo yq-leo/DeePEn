@@ -23,24 +23,15 @@ We exemplify the usage of our code with the ensemble learning of LLaMA2-13B, Mis
 
 ### Step-1: Construct Relative Representation Matrix
 
+In sh/mat.sh file, modify the path of model1 and model2 (and model3, ...), then run
+
 ```bash
-export CUDA_VISIBLE_DEVICES=0,1
-export PYTHONPATH=${PYTHONPATH}:$(pwd)
-python src/transfer_matrix/cal_and_save_transfer_matrix.py \
-    ${relative_representaton_matrix_save_path} \
-    ${Llama2_13B_path} \
-    ${Mistral_7B_path} \
-    ${InternLM_20B_path} \
-    ${TigerBot-13B_path}
+sh sh/mat.sh
 ```
 
 ### Step-2: Configuration
 
-```
-vim confs/NQ/LLaMA+Mistral+InternLM+Tigerbot.json
-```
-
-More examples are shown in the `confs` folder. Fill in the following fileds:
+In conf files, Fill in the following fields:
 
 - `model_path`: Paths to the model
 - `probability_transfer_matrix_path`: Directory path to the constructed relative representation matrix
@@ -48,43 +39,19 @@ More examples are shown in the `confs` folder. Fill in the following fileds:
 
 ### Step-3: Inference
 
-For a four-model ensemble, run the TriviaQA test with the following script:
+Modify sh/run.sh file to specify task, run_mode(rm), models, and mode(choose from vanilla, tas, tas2, tas2+mas2).
 
 ```bash
-export CUDA_VISIBLE_DEVICES=0,1 
-res_path=./res/NQ/LLaMA+Mistral+InternLM+Tigerbot
-mkdir -vp ${res_path}
-python src/main_many_ensemble_llama_series_local_matrix.py \
-  --config confs/NQ/LLaMA+Mistral+InternLM+Tigerbot.json \
-  -lpm based_on_probility_transfer_logits_fp32_processor \
-  -d0 cuda:0 -d1 cuda:0 -d2 cuda:0 -d3 cuda:1 -dp cuda:1  \
-  -rsd ${res_path} \
-  -rm test -lr 0.15 -ew 0.25 0.25 0.25 0.25
+sh sh/run.sh
 ```
-
-Where:
-
-- `-lpm`: Model ensemble strategy, detailed in `src/logits_processor/model_processor_factory.py`
-- `-rsd`: Result storage path, default to `./`
-- `-rm`: Running mode, either `dev` or `test`, default to `dev`
-- `-lr`: Ensemble learning rate, default to `0`
-- `-ew`: Ensemble model weight, default to average
 
 ### Step-4: Evaluation
 
-To perform testing, use the following command:
+Modify sh/eval.sh file to specify task, run_mode(rm), models, and mode(choose from vanilla, tas, tas2, tas2+mas2).
+
 
 ```bash
-python utils/evaluate/EM_dir_test.py eval/TriviaQA/LLaMA+Mistral+InternLM+Tigerbot/test
-
-python utils/evaluate/GSM_dir_test.py eval/GSM/LLaMA+Mistral+InternLM+Tigerbot/test
-```
-
-
-Result:
-
-```
-Accuracy: 31.55 (1139/3610)
+sh sh/eval.sh
 ```
 
 ## Requirements

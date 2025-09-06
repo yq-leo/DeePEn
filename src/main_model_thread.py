@@ -81,7 +81,8 @@ class MainModelThread(threading.Thread):
         #                                    streamer=self.model_streamer)
         generate_ids = self.model.generate(**generation_kwargs,
                                            pad_token_id=self.tokenizer.eos_token_id,
-                                           logits_processor=main_model_logits_processor_list)
+                                           logits_processor=main_model_logits_processor_list,
+                                           use_cache=False)
 
         text = self.tokenizer.decode(generate_ids[0])
         # print(text)
