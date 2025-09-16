@@ -1,0 +1,13 @@
+export CUDA_VISIBLE_DEVICES=4,1,5,6
+
+task=MMLU
+rm=test
+models=InternLM7b+qwen4b
+mode=vanilla
+
+res_path=./res/${task}/${rm}/${models}/${mode}
+log_path=./log/${task}/${rm}/${models}/${mode}
+mkdir -vp ${res_path}
+mkdir -vp ${log_path}
+
+nohup python src/main_many_ensemble_llama_series_local_matrix_mmlu.py --config confs/${task}/${models}.json -lpm based_on_probility_transfer_logits_fp32_processor -d0 cuda:0 -d1 cuda:0 -d2 cuda:0 -dp cuda:1  -rsd ${res_path} -rm ${rm} -lr 0.15 -em ${mode} > ${log_path}/run.log 2>&1 &

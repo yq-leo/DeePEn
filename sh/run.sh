@@ -1,9 +1,9 @@
-export CUDA_VISIBLE_DEVICES=0,1,2,3
+export CUDA_VISIBLE_DEVICES=6,4,7,2
 
-task=NQ
+task=MMLU
 rm=test
-models=OpenChat+InternLM7b
-mode=tas
+models=qwen4b+InternLM7b+OpenChat
+mode=tas2+mas2
 
 res_path=./res/${task}/${rm}/${models}/${mode}
 log_path=./log/${task}/${rm}/${models}/${mode}

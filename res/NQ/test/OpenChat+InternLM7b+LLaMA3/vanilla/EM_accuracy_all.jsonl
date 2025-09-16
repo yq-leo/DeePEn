@@ -1,0 +1,4 @@
+{"accuracy": "26.67", "num_total": 15, "num_correct": 4, "sys_file_path": "res/NQ/test/OpenChat+InternLM7b+LLaMA3/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
+{"accuracy": "29.04", "num_total": 2166, "num_correct": 629, "sys_file_path": "res/NQ/test/OpenChat+InternLM7b+LLaMA3/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
+{"accuracy": "28.98", "num_total": 2191, "num_correct": 635, "sys_file_path": "res/NQ/test/OpenChat+InternLM7b+LLaMA3/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
+{"accuracy": "29.28", "num_total": 3610, "num_correct": 1057, "sys_file_path": "res/NQ/test/OpenChat+InternLM7b+LLaMA3/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}

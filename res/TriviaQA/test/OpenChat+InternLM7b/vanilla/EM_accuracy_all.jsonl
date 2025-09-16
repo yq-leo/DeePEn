@@ -1,0 +1,3 @@
+{"accuracy": "72.58", "num_total": 6000, "num_correct": 4355, "sys_file_path": "res/TriviaQA/test/OpenChat+InternLM7b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
+{"accuracy": "72.58", "num_total": 6000, "num_correct": 4355, "sys_file_path": "res/TriviaQA/test/OpenChat+InternLM7b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
+{"accuracy": "72.58", "num_total": 6000, "num_correct": 4355, "sys_file_path": "res/TriviaQA/test/OpenChat+InternLM7b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}

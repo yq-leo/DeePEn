@@ -1,0 +1,1 @@
+{"accuracy": "86.58", "num_total": 1170, "num_correct": 1013, "sys_file_path": "res/ARC-c/test/qwen4b+InternLM7b+OpenChat/tas3+mas2/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
