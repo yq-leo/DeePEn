@@ -1,0 +1,1 @@
+{"accuracy": "70.50", "num_total": 13868, "num_correct": 9777, "sys_file_path": "res/MMLU/test/InternLM7b+qwen4b/tas2+mas2/ensemble_lr0.15_learning_epochs_nums5.jsonl"}

@@ -1,3 +1,5 @@
 {"accuracy": "53.27", "num_total": 13868, "num_correct": 7387, "sys_file_path": "res/MMLU/test/InternLM7b+qwen4b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
 {"accuracy": "42.21", "num_total": 13868, "num_correct": 5854, "sys_file_path": "res/MMLU/test/InternLM7b+qwen4b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
 {"accuracy": "42.21", "num_total": 13868, "num_correct": 5854, "sys_file_path": "res/MMLU/test/InternLM7b+qwen4b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
+{"accuracy": "70.56", "num_total": 13868, "num_correct": 9785, "sys_file_path": "res/MMLU/test/InternLM7b+qwen4b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
+{"accuracy": "70.56", "num_total": 13868, "num_correct": 9785, "sys_file_path": "res/MMLU/test/InternLM7b+qwen4b/vanilla/ensemble_lr0.15_learning_epochs_nums5.jsonl"}
