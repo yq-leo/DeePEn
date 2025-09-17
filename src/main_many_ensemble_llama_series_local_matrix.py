@@ -254,6 +254,9 @@ def main():
                     except:
                         break
 
+                    if ensemble_model_generate_next_id.item() == main_model_tokenizer.eos_token_id or ensemble_model_generate_next_id.item() == main_model_tokenizer.convert_tokens_to_ids("<|im_end|>"):
+                        break
+
                     temp_tensor = ensemble_model_generate_next_id
                     got_tokens = main_model_tokenizer.convert_ids_to_tokens(temp_tensor)
                     temp_tokens = got_tokens[:]

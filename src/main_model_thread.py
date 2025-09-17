@@ -71,7 +71,7 @@ class MainModelThread(threading.Thread):
             "max_new_tokens": max_new_tokens,
             "do_sample": False,
             "num_beams": 1,
-            "eos_token_id": self.tokenizer.eos_token_id,
+            "eos_token_id": [self.tokenizer.eos_token_id, self.tokenizer.convert_tokens_to_ids("<|im_end|>")],
             "bos_token_id": self.tokenizer.bos_token_id,
             # "pad_token_id": self.tokenizer.pad_token_id
         }

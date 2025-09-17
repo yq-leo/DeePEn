@@ -107,8 +107,12 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
 
         if self.early_stop_string_list is not None:
             for early_stop_string in self.early_stop_string_list:
+                # early_stop_token = self.main_model_tokenizer(early_stop_string, return_tensors="pt",
+                #                                              add_special_tokens=False).input_ids.tolist()[0][1:]
                 early_stop_token = self.main_model_tokenizer(early_stop_string, return_tensors="pt",
-                                                             add_special_tokens=False).input_ids.tolist()[0][1:]
+                                                             add_special_tokens=False).input_ids.tolist()[0]
+                early_stop_token = early_stop_token[1:] if len(early_stop_token) > 1 else early_stop_token
+
                 last_token_count = len(early_stop_token)
 
                 last_token_ids = input_ids.tolist()[0][-last_token_count:]
