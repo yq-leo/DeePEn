@@ -140,8 +140,7 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
                 # Print the shape of main_model_relative_representation_probs
                 # print(f"main_model_relative_representation_probs dim:{main_model_relative_representation_probs.shape}")
 
-                main_model_relative_values, main_model_relative_indices = torch.topk(
-                    main_model_relative_representation_probs, k=10)
+                main_model_relative_values, main_model_relative_indices = torch.topk(main_model_relative_representation_probs, k=10)
                 json_object[f'main_rel_values'] = main_model_relative_values.tolist()[0]
                 json_object[f'main_rel_indices'] = main_model_relative_indices.tolist()[0]
 
