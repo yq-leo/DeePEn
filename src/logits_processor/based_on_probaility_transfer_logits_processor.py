@@ -158,8 +158,7 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
                         index].convert_ids_to_tokens(indices.tolist()[0])
 
                     assist_model_relative_representation_probs = torch.mm(assist_model_generate_ids_probs,
-                                                                          assist_model_probability_transfer_matrix).to(
-                        self.device_compute)
+                                                                          assist_model_probability_transfer_matrix).to(self.device_compute)
                     # Print the shape of assist_model_relative_representation_probs
                     # print(f"assist_model_relative_representation_probs dim:{assist_model_relative_representation_probs.shape}")
 
@@ -175,7 +174,6 @@ class BasedOnProbabilityTransferLogits_Loacal_FP32_Processor(LogitsProcessor):
             average_probs = torch.zeros_like(main_model_relative_representation_probs)
 
             # --- start of ensemble ---
-
             model_relative_representation_probs_mat = torch.stack([probs.flatten() for probs in model_relative_representation_probs_list], dim=0)
             weight_vec = torch.tensor(self.ensemble_weight, device=model_relative_representation_probs_mat.device).unsqueeze(1)
 
